@@ -29,13 +29,14 @@ With relation to trying to protect the VM from attacks, we've already changed th
 
 Wrote a script to check diskspace '/'. This logs out to a logfile as requested with a datetime and the amount if space that's left available. This has been added to cron and runs every 5 minutes as requested.
 
-Logrotate rotates the logs every 1 hour and compresses the rotated logfile and keeps a maximum of 10 rotated logfiles. This was achieved by adding the following to /etc/logrotate.conf:
+Logrotate rotates the logs every 1 hour and compresses the rotated logfile and keeps a maximum of 10 rotated logfiles. Since hourly logrotates don't quite come out of the box, I had to create my own /etc/cron.hourly/logrotate directory and configuration file:
 
 /var/log/freespace {
-        hourly 
+        hourly
         create 700 skyuser skyuser
         rotate 10
         compress
+        nomail
 }
 
 Installing netdata: I had to teporarily enable outbound connectivity to netdata to allow the netdata to be installed. The installation took around 5 minutes to complete with this command: bash <(curl -Ss https://my-netdata.io/kickstart.sh). The dashboard for this was available for viewing on <INSTANCE_IP>:19999
@@ -44,7 +45,7 @@ Installing Nginx: This was straight forward in that AWS has an nginx package ava
 
 I added a new page here: /usr/share/nginx/html/hellosky.htm which outputs "Hello, Sky", as requested.
 
-To ensure that nginx runs automatically on bot, I ran: systemctl enable nginx
+To ensure that nginx runs automatically on boot, I ran: systemctl enable nginx
 
 
 Additional comments:
@@ -60,3 +61,6 @@ ingress {
   }
 
 As well as this, I'd consider using puppet to automate the deployment of the crontab contents and potentially the check_diskspace.sh script could be deployed via this method and scheduled (as well as directory/permissions being handled too). 
+
+AMI Has been exported. AMI ID: ami-0e84dbfa3515ae899 and is available publicly. 
+Username and password to access the host will be e-mailed over as part of my response.
