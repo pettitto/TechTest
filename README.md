@@ -12,7 +12,7 @@ Following this, I also had to add this port into the default security group in A
 
 Disabling root log in was actually done already as part of the standard Amazon Linux 2 AMI, however, this can be controlled by commenting out #PermitRootLogin yes or explicitly setting PermitRootLogin no
 
-I have removed the ability to access the host using SSH Keys and opted for Passwords only, we could rotate passwords which should be obtained from a secure password store, rather than relying on SSH keys which are much harder to keep on top of (employees leave the business for example). e're able to limit who can actually attempt to connect to the host via Firewall rules.
+I have removed the ability to access the host using SSH Keys and opted for Passwords only, we could rotate passwords which should be obtained from a secure password store, rather than relying on SSH keys which are much harder to keep on top of (employees leave the business for example). We're able to limit who can actually attempt to connect to the host via Firewall rules.
 
 Setting up a standard user with full sudo privileges:
 
@@ -25,7 +25,9 @@ Setting up a standard user with full sudo privileges:
 
 For additional security, it's worth bearing in mind that on a standard Amazon Linux 2 AMI that it comes with a user already set up with full sudo privileges, which in this case is called ec2-user. It's good practice to remove any entries in the sudoers file that you either don't recognise or are standard users that come with the OS by AWS. Leaving these in could give an intruder unwanted access.
 
-With relation to trying to protect the VM from attacks, we've already changed the SSH port and disabled logging in as the root user. Additional to that, within the AWS console, I have restricted which IP address can connect to the VM, this can be useful for internal based services or if you want to limit various IP ranges from being able to access the host/service. This was done within the security section with the AWS security panel. This can be done as part of a standard build within Terraform too by adding a resource "aws_security_group". *** I did attempt this but came across a few issues with remote execution - the idea was that I was looking to have the SSH Port change script deployed as part of the build and executed, that way, we could automatically just SSH onto the host on port 5522 - I'd need a bit more time to investigate and test this further. ***
+With relation to trying to protect the VM from attacks, we've already changed the SSH port and disabled logging in as the root user. Additional to that, within the AWS console, I have restricted which IP address can connect to the VM, this can be useful for internal based services or if you want to limit various IP ranges from being able to access the host/service. This was done within the security section with the AWS security panel. This can be done as part of a standard build within Terraform too by adding a resource "aws_security_group". 
+
+*** I did attempt this but came across a few issues with remote execution - the idea was that I was looking to have the SSH Port change script deployed as part of the build and executed, that way, we could automatically just SSH onto the host on port 5522 - I'd need a bit more time to investigate and test this further.
 
 Wrote a script to check diskspace '/'. This logs out to a logfile as requested with a datetime and the amount if space that's left available. This has been added to cron and runs every 5 minutes as requested.
 
@@ -67,4 +69,4 @@ Username and password to access the host will be e-mailed over as part of my res
 
 -- 03/03/2021
 
-***Added implementation for remote-exec after figuring out the connectivity details. Also delved into variablising some of the content that was in main.tf
+*** Added implementation for remote-exec after figuring out the connectivity details. Also delved into variablising some of the content that was in main.tf
