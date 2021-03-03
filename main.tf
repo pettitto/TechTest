@@ -51,7 +51,7 @@ resource "aws_instance" "TechTest" {
 
 output "instance_public_ip" {
   description = "Public IP address of the EC2 instance"
-  value       = aws_instance.TechTest.public_ip[*]
+  value       = aws_instance.TechTest.public_ip
 }
 
 resource "aws_key_pair" "ssh-key" {
