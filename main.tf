@@ -16,7 +16,6 @@ resource "aws_instance" "TechTest" {
   ami                         = var.ami_value
   instance_type               = var.instance_type
   security_groups             = ["access-controls"]
-  count                       = 1
   associate_public_ip_address = true
   key_name                    = "ssh-key"
 
@@ -25,10 +24,34 @@ resource "aws_instance" "TechTest" {
   ]
 
   tags = {
-    AmiValue    = var.ami_value
-    InstaceType = var.instance_type
+    AmiValue     = var.ami_value
+    InstanceType = var.instance_type
   }
 
+  connection {
+    type  = "ssh"
+    host  = aws_instance.TechTest.public_ip
+    user  = var.ssh_user
+    port  = var.ssh_port
+    agent = true
+  }
+
+  provisioner "file" {
+    source      = "change_ssh_port.sh"
+    destination = "/tmp/change_ssh_port.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /tmp/change_ssh_port.sh",
+      "/tmp/change_ssh_port.sh",
+    ]
+  }
+}
+
+output "instance_public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_instance.TechTest.public_ip[*]
 }
 
 resource "aws_key_pair" "ssh-key" {
@@ -41,8 +64,8 @@ resource "aws_security_group" "access-controls" {
   description = "Access Controls for SSH and Netdata"
 
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = var.ssh_port
+    to_port     = var.ssh_port
     protocol    = "tcp"
     description = "SSH"
     cidr_blocks = ["0.0.0.0/0"]
@@ -53,6 +76,14 @@ resource "aws_security_group" "access-controls" {
     to_port     = 19999
     protocol    = "tcp"
     description = "Netdata"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = var.secure_ssh_port
+    to_port     = var.secure_ssh_port
+    protocol    = "tcp"
+    description = "Secure SSH Port"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
