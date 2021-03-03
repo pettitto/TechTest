@@ -13,8 +13,8 @@ provider "aws" {
 }
 
 resource "aws_instance" "TechTest" {
-  ami                         = "ami-0e999cbd62129e3b1"
-  instance_type               = "t2.micro"
+  ami                         = var.ami_value
+  instance_type               = var.instance_type
   security_groups             = ["access-controls"]
   count                       = 1
   associate_public_ip_address = true
@@ -23,6 +23,11 @@ resource "aws_instance" "TechTest" {
   vpc_security_group_ids = [
     aws_security_group.access-controls.id
   ]
+
+  tags = {
+    AmiValue    = var.ami_value
+    InstaceType = var.instance_type
+  }
 
 }
 
