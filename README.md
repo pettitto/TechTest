@@ -35,7 +35,7 @@ Logrotate rotates the logs every 1 hour and compresses the rotated logfile and k
 
 /var/log/freespace {
         hourly
-        create 700 skyuser skyuser
+        create 0644 skyuser skyuser
         rotate 10
         compress
         nomail
